@@ -519,7 +519,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.1}
   m_AnchorMax: {x: 0.5, y: 0.11687357}
-  m_AnchoredPosition: {x: 0, y: -88.900024}
+  m_AnchoredPosition: {x: 0, y: -88.8999}
   m_SizeDelta: {x: 1125, y: 173.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &583128336
@@ -695,6 +695,7 @@ GameObject:
   - component: {fileID: 843201759}
   - component: {fileID: 843201758}
   - component: {fileID: 843201757}
+  - component: {fileID: 843201760}
   m_Layer: 0
   m_Name: CaboDeGuerra
   m_TagString: Untagged
@@ -780,6 +781,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 843201755}
   m_CullTransparentMesh: 1
+--- !u!114 &843201760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843201755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03d96aaee69337e458f8d98f804a597c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anim: {fileID: 843201757}
+  alternative: {fileID: 1154583603}
+  alternativeTwo: {fileID: 1429918413}
 --- !u!1 &847692629
 GameObject:
   m_ObjectHideFlags: 0
