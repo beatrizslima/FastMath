@@ -64,7 +64,6 @@ func (gs *gameServer) RemoveGame(gameName string, g *Game) {
 func (gs *gameServer) MatchMakerRoutine() {
 	log.Println("Starting MatchMakerRoutine")
 	for {
-		// nil is recieved if the player wants to cancel
 		p1 := <-gs.matchChannel
 		p2 := <-gs.matchChannel
 

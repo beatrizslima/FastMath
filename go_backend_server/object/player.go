@@ -31,7 +31,8 @@ func (p *Player) RecieveMessages() {
 		_, message, err := p.conn.ReadMessage()
 		p.msgFromClient <- message
 		if err != nil {
-			log.Println("Could not recieve message from player ")
+			log.Println("Could not recieve message from player ", p.name)
+			p.exitChan <- 1
 		}
 	}
 }
@@ -41,7 +42,7 @@ func (p *Player) SendMessage(msg []byte) error {
 	defer p.sendMutex.Unlock()
 
 	log.Println("Sending message to", p.name, ":", string(msg))
-	return p.conn.WriteMessage(1, msg)
+	return p.conn.WriteMessage(websocket.TextMessage, msg)
 }
 
 func (p *Player) Close() {
