@@ -11,14 +11,14 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        RandomQuestion();
+        //RandomQuestion();
     }
 
-    void RandomQuestion(){
-        int random = Random.Range(0, questions.Count);
-        randomized = questions[random];
-        uIManager.SetQuestion(randomized);
-    }
+    // void RandomQuestion(){
+    //     int random = Random.Range(0, questions.Count);
+    //     randomized = questions[random];
+    //     uIManager.SetQuestion(randomized);
+    // }
 
     // public bool SelectedAnswer(string answered){
     //     bool isCorrect = false;
