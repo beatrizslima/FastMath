@@ -3,6 +3,9 @@ package model
 import (
 	"encoding/json"
 	"log"
+	"math/rand"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -17,11 +20,46 @@ type GameState struct {
 	OpponentName string
 	GameEnded    bool
 	Winner       bool
+	RoundData    *RoundData
+}
+
+type Guess struct {
+	RoundId string
+	Value1  int
+	Value2  int
+	Guess   int
+}
+
+type GuessResponse struct {
+	RoundId string
+	Points  int
+	Answer  string //right, wrong, late
 }
 
 type SocketMessage struct {
 	Type    string
 	Message json.RawMessage
+}
+
+type RoundData struct {
+	RoundId      string
+	Value1       int
+	Value2       int
+	Alternatives [3]int
+}
+
+func NewRoundData() *RoundData {
+
+	position := rand.Intn(2)
+	round := RoundData{
+		RoundId:      uuid.New().String(),
+		Value1:       rand.Intn(10),
+		Value2:       rand.Intn(10),
+		Alternatives: [3]int{rand.Intn(100), rand.Intn(100), rand.Intn(100)},
+	}
+	round.Alternatives[position] = round.Value1 * round.Value2
+
+	return &round
 }
 
 func ParseSocketMessage(msgBytes []byte) *SocketMessage {
@@ -31,6 +69,15 @@ func ParseSocketMessage(msgBytes []byte) *SocketMessage {
 		log.Println("ERROR", "Error in recieving message", err)
 	}
 	return &msg
+}
+
+func ParseGuess(msg json.RawMessage) *Guess {
+	guess := Guess{}
+	err := json.Unmarshal(msg, &guess)
+	if err != nil {
+		log.Println("ERROR", "Error when parsing guess json", err)
+	}
+	return &guess
 }
 
 // ToBytes returns the socket message in bytes
