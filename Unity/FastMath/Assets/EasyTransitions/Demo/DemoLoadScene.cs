@@ -1,10 +1,8 @@
 using UnityEngine;
 
 namespace EasyTransition
-{
-
-    public class DemoLoadScene : MonoBehaviour
-    {
+{   
+    public class DemoLoadScene : MonoBehaviour {
         public TransitionSettings transition;
         public float startDelay;
 
@@ -15,6 +13,5 @@ namespace EasyTransition
         }   
     }
 
+
 }
-
-

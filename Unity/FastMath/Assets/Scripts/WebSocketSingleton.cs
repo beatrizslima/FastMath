@@ -38,7 +38,7 @@ public class WebSocketSingleton : MonoBehaviour
     public void CreateConn(string playerName)
     {
         // Inicialize sua conexão WebSocket aqui
-        webSocket = new WebSocket("ws://192.168.18.77:4000/connect?id=" + playerName);
+        webSocket = new WebSocket("ws://fast-math-ws-3lsl5v5pjq-rj.a.run.app:80/connect?id=" + playerName);
         webSocket.Connect();
 
         webSocket.OnOpen += () =>

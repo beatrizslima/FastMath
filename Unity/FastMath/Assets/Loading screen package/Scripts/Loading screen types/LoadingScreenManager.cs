@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class LoadingScreenManager : MonoBehaviour
 {
@@ -9,6 +11,7 @@ public class LoadingScreenManager : MonoBehaviour
         _animatorComponent = transform.GetComponent<Animator>();  
 
         // Remove it if you don't want to hide it in the Start function and call it elsewhere
+        new WaitForSeconds(3.5f); 
         HideLoadingScreen();
     }
 
@@ -25,14 +28,17 @@ public class LoadingScreenManager : MonoBehaviour
 
     public void OnFinishedReveal()
     {
+        SceneManager.LoadScene("Home");
+
         // TODO: remove it and load your own scene !!
-        transform.parent.GetComponent<DemoSceneManager>().OnLoadingScreenRevealed();
+        //transform.parent.GetComponent<DemoSceneManager>().OnLoadingScreenRevealed();
     }
 
     public void OnFinishedHide()
     {
+        SceneManager.LoadScene("Home");
         // TODO: remove it and call your functions 
-        transform.parent.GetComponent<DemoSceneManager>().OnLoadingScreenHided();
+        //transform.parent.GetComponent<DemoSceneManager>().OnLoadingScreenHided();
     }
 
 }

@@ -41,10 +41,10 @@ public class MainMenu : Singleton<MainMenu>
     void SavePlayerNameAndGoToPlay(string name)
     {
         PlayerPrefs.SetString("PlayerName", name);
-        LoadScene("Game");
+        // LoadScene("Game");
     }
 
-    void LoadScene(string sceneName)
+    public void LoadScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
     }
