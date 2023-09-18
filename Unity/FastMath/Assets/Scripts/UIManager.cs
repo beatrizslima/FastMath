@@ -10,6 +10,7 @@ using EasyTransition;
 public class UIManager : MonoBehaviour
 {
     private bool monitorActive = false;
+    private int currPosition = 0;
     [SerializeField] private TextMeshProUGUI questionText1;
     [SerializeField] private TextMeshProUGUI questionText2;
     [SerializeField] private TextMeshProUGUI alternative1;
@@ -30,7 +31,7 @@ public class UIManager : MonoBehaviour
 
     string roundId;
     float seconds = 1.5f;
-    float finalMatchSeconds = 5f;
+    float finalMatchSeconds = 3f;
     [SerializeField] private TransitionSettings transition;
 
     void Start()
@@ -116,11 +117,12 @@ public class UIManager : MonoBehaviour
     {
         string queueData;
 
-        while (MatchData.Instance.queuedLogs.TryDequeue(out queueData))
+        while (MatchData.Instance.queuedLogs.TryDequeue(out queueData) && !string.IsNullOrEmpty(queueData))
         {
             tryGetMatchData();
         }
     }
+    
 
     bool tryGetMatchData()
     {
@@ -161,13 +163,15 @@ public class UIManager : MonoBehaviour
 
                 MatchData.Instance.gameEnded = null;
             }
-            if (MatchData.Instance.points != null)
+            if (MatchData.Instance.points != null && int.Parse(MatchData.Instance.points)!=currPosition)
             {
-                Vector3 pos = new Vector3(float.Parse(MatchData.Instance.points) * 10, 0,0);
-                TugOfWar.transform.position += pos;
+                var posX = int.Parse(MatchData.Instance.points);
+                Vector3 pos = new Vector3((float)posX * 0.5f, TugOfWar.transform.position.y,TugOfWar.transform.position.z);
+                currPosition = posX;
+                TugOfWar.transform.position = pos;
             }
 
-            if (string.IsNullOrEmpty(roundId))
+            if (!string.IsNullOrEmpty(roundId))
             {
                 return true;
             }
