@@ -9,18 +9,22 @@ import (
 )
 
 const (
-	Starting = "starting"
-	Waiting  = "waiting"
-	Guessed  = "guessed"
-	End      = "end"
+	Beggining = "beggining"
+	Starting  = "starting"
+	Waiting   = "waiting"
+	Guessed   = "guessed"
+	End       = "end"
 )
 
 type GameState struct {
+	GameEnded bool
+	Winner    bool
+	RoundData *RoundData
+}
+
+type GameStart struct {
 	YourPoints   int
 	OpponentName string
-	GameEnded    bool
-	Winner       bool
-	RoundData    *RoundData
 }
 
 type Guess struct {
@@ -96,8 +100,19 @@ func (msg *GameState) ToSocketBytes() []byte {
 		gameState = []byte(err.Error())
 	}
 	sm := SocketMessage{
-		Type:    starting,
+		Type:    Starting,
 		Message: gameState,
+	}
+	return sm.ToBytes()
+}
+func (msg *GameStart) ToSocketBytes() []byte {
+	gameStart, err := json.Marshal(msg)
+	if err != nil {
+		gameStart = []byte(err.Error())
+	}
+	sm := SocketMessage{
+		Type:    Beggining,
+		Message: gameStart,
 	}
 	return sm.ToBytes()
 }
