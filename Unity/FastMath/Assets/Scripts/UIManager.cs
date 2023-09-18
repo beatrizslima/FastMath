@@ -21,6 +21,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button button1;
     [SerializeField] private Button button2;
     [SerializeField] private Button button3;
+    [SerializeField] private Button Home;
+    [SerializeField] private Button Yes;
+    [SerializeField] private Button No;
+    [SerializeField] private GameObject PopUpGoHome;
     [SerializeField] private GameObject RightAnswerFb;
     [SerializeField] private GameObject WrongAnswerFb;
     [SerializeField] private GameObject LateAnswerFb;
@@ -44,6 +48,22 @@ public class UIManager : MonoBehaviour
         button1.onClick.AddListener(() => HandleAlternativeClick(button1.GetComponentInChildren<TextMeshProUGUI>().text));
         button2.onClick.AddListener(() => HandleAlternativeClick(button2.GetComponentInChildren<TextMeshProUGUI>().text));
         button3.onClick.AddListener(() => HandleAlternativeClick(button3.GetComponentInChildren<TextMeshProUGUI>().text));
+        Home.onClick.AddListener(PopUpGoToHome);
+        Yes.onClick.AddListener(GoHome);
+        No.onClick.AddListener(ClosePopUp);
+    }
+
+    void PopUpGoToHome(){
+        PopUpGoHome.SetActive(true);
+    }
+
+    void GoHome(){
+        TransitionManager.Instance().Transition("Home", transition, 0);
+        WsSingleton.Instance.Close();
+    }
+
+    void ClosePopUp(){
+        PopUpGoHome.SetActive(false);
     }
 
     IEnumerator ShowRigthFB(float seconds)

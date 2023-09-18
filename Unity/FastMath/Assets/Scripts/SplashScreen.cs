@@ -14,11 +14,31 @@ public class SplashScreen : MonoBehaviour
     float time, second;
     bool isLoading = true;
     bool isTransitioning = false;
+    [SerializeField] private Button Home;
+    [SerializeField] private Button Yes;
+    [SerializeField] private Button No;
+    [SerializeField] private GameObject PopUpGoHome;
     [SerializeField] private Image FillLoading;
     // Start is called before the first frame update
     void Start()
     {
         isTransitioning = false;
+        Home.onClick.AddListener(PopUpGoToHome);
+        Yes.onClick.AddListener(GoHome);
+        No.onClick.AddListener(ClosePopUp);
+    }
+
+     void PopUpGoToHome(){
+        PopUpGoHome.SetActive(true);
+    }
+
+    void GoHome(){
+        TransitionManager.Instance().Transition("Home", transition, 0);
+        WsSingleton.Instance.Close();
+    }
+
+    void ClosePopUp(){
+        PopUpGoHome.SetActive(false);
     }
 
     public void LoadGame()
