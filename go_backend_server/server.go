@@ -1,3 +1,5 @@
+// gcp service fast-math-ws artifactory register cloud-run-source-deploy
+// deploy with gcloud run deploy fast-math-ws artifactory --image cloud-run-source-deploy
 package main
 
 import (
@@ -10,15 +12,16 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var addr = flag.String("addr", "0.0.0.0:4000", "Server address")
+var addr = flag.String("addr", "0.0.0.0:8080", "Server address")
 
 func main() {
 	flag.Parse()
 
 	http.HandleFunc("/connect", newConnectionParse)
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "JumpAndShoot engine is running on this port")
+		fmt.Fprintf(w, "FastMath engine is running on this port")
 	})
+	http.Handle("/view/", http.StripPrefix("/view/", http.FileServer(http.Dir("public_html"))))
 
 	err := http.ListenAndServe(*addr, nil)
 	if err != nil {

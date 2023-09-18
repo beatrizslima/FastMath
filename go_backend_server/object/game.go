@@ -33,25 +33,29 @@ func NewGame(p1 *Player, p2 *Player) *Game {
 
 	go game.RouteMessage()
 
-	initMsgP1 := model.GameState{
-		YourPoints:   p1.points,
+	initMsgP1 := model.GameStart{
+		YourPoints:   0,
 		OpponentName: p2.name,
-		GameEnded:    false,
-		Winner:       false,
-		RoundData:    roundMsg,
 	}
 
-	initMsgP2 := model.GameState{
-		YourPoints:   p2.points,
-		OpponentName: p1.name,
-		GameEnded:    false,
-		Winner:       false,
-		RoundData:    roundMsg,
+	initMsgP2 := model.GameStart{
+		YourPoints:   0,
+		OpponentName: p2.name,
+	}
+
+	startState := model.GameState{
+		GameEnded: false,
+		Winner:    false,
+		RoundData: roundMsg,
 	}
 
 	p1.SendMessage(initMsgP1.ToSocketBytes())
 
 	p2.SendMessage(initMsgP2.ToSocketBytes())
+
+	p1.SendMessage(startState.ToSocketBytes())
+
+	p2.SendMessage(startState.ToSocketBytes())
 
 	return &game
 }
@@ -91,10 +95,8 @@ BREAK:
 
 func getGameWinnerMessage(OpponentName string) []byte {
 	gW := model.GameState{
-		YourPoints:   5,
-		OpponentName: OpponentName,
-		GameEnded:    true,
-		Winner:       true,
+		GameEnded: true,
+		Winner:    true,
 	}
 	winMessage, _ := json.Marshal(gW)
 	msg := model.SocketMessage{
@@ -105,10 +107,8 @@ func getGameWinnerMessage(OpponentName string) []byte {
 }
 func getGameLoserMessage(OpponentName string) []byte {
 	gW := model.GameState{
-		YourPoints:   -5,
-		OpponentName: OpponentName,
-		GameEnded:    true,
-		Winner:       false,
+		GameEnded: true,
+		Winner:    false,
 	}
 	winMessage, _ := json.Marshal(gW)
 	msg := model.SocketMessage{

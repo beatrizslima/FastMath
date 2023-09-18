@@ -1,0 +1,67 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    min-width: 100vw;
+    min-height: 100vh;
+    background: linear-gradient(45deg, #222, #000);
+}
+.gameWrapper{
+    width: 400px;
+    aspect-ratio: 9/16;
+    background-color: orange;
+    border:solid 4px black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#homeScene{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: green;
+}
+.gameTitle{
+    width: 70%;
+    aspect-ratio: 16/9;
+    background-color: red;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.gameTitle img{
+    width: 90%;
+}
+
+#inputPlay{
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: blue;
+}
+ 
+#playScene{
+    display: none;
+}
+
+.bottom{
+    display: flex;
+    justify-content: end;
+    align-items: end;
+    width: 90%;
+}
+#infoButton{
+    margin: 20px;
+    width:  42px;
+    height: 42px;
+}
