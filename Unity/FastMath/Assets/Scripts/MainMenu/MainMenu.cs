@@ -4,13 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
-using NativeWebSocket;
+using EasyTransition;
 
 public class MainMenu : Singleton<MainMenu>
 {
-    WebSocket websocket;
-
     [SerializeField] private TMP_InputField InputFieldName;
+    [SerializeField] private TransitionSettings transition;
     [SerializeField] private Button Play;
     [SerializeField] private Button Info;
     [SerializeField] private GameObject InfoBoard;
@@ -41,13 +40,12 @@ public class MainMenu : Singleton<MainMenu>
     void SavePlayerNameAndGoToPlay(string name)
     {
         PlayerPrefs.SetString("PlayerName", name);
-        // LoadScene("Game");
+
+        TransitionManager.Instance().Transition("Splash", transition, 0);
+
+        //SceneManager.LoadScene("Splash");
     }
 
-    public void LoadScene(string sceneName)
-    {
-        SceneManager.LoadScene(sceneName);
-    }
 
     void OpenInfoBoard()
     {
@@ -58,4 +56,8 @@ public class MainMenu : Singleton<MainMenu>
         InfoBoard.SetActive(false);
     }
 
+    void Update()
+    {
+
+    }
 }

@@ -5,10 +5,11 @@ using UnityEngine.UI;
 using TMPro;
 using SimpleJSON;
 using System.Collections.Concurrent;
+using EasyTransition;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] private GameManager gameManager;
+    private bool monitorActive = false;
     [SerializeField] private TextMeshProUGUI questionText1;
     [SerializeField] private TextMeshProUGUI questionText2;
     [SerializeField] private TextMeshProUGUI alternative1;
@@ -19,76 +20,77 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button button1;
     [SerializeField] private Button button2;
     [SerializeField] private Button button3;
+    [SerializeField] private GameObject RightAnswerFb;
+    [SerializeField] private GameObject WrongAnswerFb;
+    [SerializeField] private GameObject LateAnswerFb;
+    [SerializeField] private GameObject WinnerFb;
+    [SerializeField] private GameObject DefeatFb;
+    [SerializeField] private GameObject TugOfWar;
+
+
     string roundId;
-
-    private Question question;
-    private bool answered;
-
-    ConcurrentQueue<MatchData> queuedLogs = new ConcurrentQueue<MatchData>();
+    float seconds = 1.5f;
+    float finalMatchSeconds = 5f;
+    [SerializeField] private TransitionSettings transition;
 
     void Start()
     {
         SetPlayersName();
-        WsSingleton.Instance.OnMessageReceived += HandleWebSocketMessage;
-        
-        button1.onClick.AddListener(()=>HandleAlternativeClick(button1.GetComponentInChildren<TextMeshProUGUI>().text));
-        button2.onClick.AddListener(()=>HandleAlternativeClick(button2.GetComponentInChildren<TextMeshProUGUI>().text));
-        button3.onClick.AddListener(()=>HandleAlternativeClick(button3.GetComponentInChildren<TextMeshProUGUI>().text));
+        //SetMatch();
+
+        CheckQueue();
+
+        button1.onClick.AddListener(() => HandleAlternativeClick(button1.GetComponentInChildren<TextMeshProUGUI>().text));
+        button2.onClick.AddListener(() => HandleAlternativeClick(button2.GetComponentInChildren<TextMeshProUGUI>().text));
+        button3.onClick.AddListener(() => HandleAlternativeClick(button3.GetComponentInChildren<TextMeshProUGUI>().text));
     }
 
-    struct MatchData {
-        public string opponentName; 
-        public string questionOne; 
-        public string questionTwo; 
-        public string alternative1; 
-        public string alternative2; 
-        public string alternative3; 
-        public string gameEnded; 
-        public string winner;
-    }
-
-    private void HandleWebSocketMessage(string data)
+    IEnumerator ShowRigthFB(float seconds)
     {
-        if (data == "Match made")
-        {
-            Debug.Log("Starting match");
-            return;
-        }
-        var message = JSONNode.Parse(data);
-        Debug.Log(message["Type"]);
+        RightAnswerFb.SetActive(true);
 
-        switch (message["Type"].Value)
-        {
-            case "starting":
+        yield return new WaitForSeconds(seconds);
 
-                try
-                {                        
-                    roundId = message["Message"]["RoundData"]["RoundId"].Value;
+        RightAnswerFb.SetActive(false);
+    }
+    IEnumerator ShowWrongFB(float seconds)
+    {
+        WrongAnswerFb.SetActive(true);
 
-                    var name = new MatchData { 
-                        opponentName = message["Message"]["OpponentName"].Value, 
-                        questionOne = message["Message"]["RoundData"]["Value1"].Value, 
-                        questionTwo = message["Message"]["RoundData"]["Value2"].Value, 
-                        alternative1 = message["Message"]["RoundData"]["Alternatives"][0].Value, 
-                        alternative2 = message["Message"]["RoundData"]["Alternatives"][1].Value,
-                        alternative3 = message["Message"]["RoundData"]["Alternatives"][2].Value, 
-                        gameEnded = message["Message"]["RoundData"]["GameEnded"].Value,
-                        winner = message["Message"]["RoundData"]["Winner"].Value
-                    };
-                    queuedLogs.Enqueue(name);
-                }
-                catch (System.Exception e)
-                {
-                    Debug.Log(e.Message);
-                    throw;
-                }
-            break;
-            default:
-                Debug.Log(message["Type"].Value);
-                Debug.Log(message["Message"].Value);
-                break;
+        yield return new WaitForSeconds(seconds);
 
-        }
+        WrongAnswerFb.SetActive(false);
+    }
+    IEnumerator ShowLateFB(float seconds)
+    {
+        LateAnswerFb.SetActive(true);
+
+        yield return new WaitForSeconds(seconds);
+
+        LateAnswerFb.SetActive(false);
+    }
+
+    IEnumerator WinnerFB(float seconds)
+    {
+        WinnerFb.SetActive(true);
+
+        yield return new WaitForSeconds(seconds);
+
+        WinnerFb.SetActive(false);
+
+        TransitionManager.Instance().Transition("Home", transition, 0);
+
+    }
+    IEnumerator DefeatFB(float seconds)
+    {
+        DefeatFb.SetActive(true);
+
+        yield return new WaitForSeconds(seconds);
+
+        DefeatFb.SetActive(false);
+
+        TransitionManager.Instance().Transition("Home", transition, 0);
+
     }
 
     void SetPlayersName()
@@ -97,49 +99,94 @@ public class UIManager : MonoBehaviour
         Player1Name.SetText(name);
     }
 
-    // public void SetQuestion(Question question){
-    //     // gets the randomized question and its alternatives and sets the text
-    //     this.question = question;
-    //     questionText.text = question.questionInfo;
-    //     List<string> answerList = ShuffleList.ShuffleListItems<string>(question.alternatives);   
+    void SetMatch()
+    {
+    }
 
-    //     for (int i = 0; i < alternatives.Count; i++)
-    //     {
-    //         alternatives[i].GetComponentInChildren<TextMeshProUGUI>().text = answerList[i];
-    //         alternatives[i].name = answerList[i];
-    //     }
-
-    //     answered = false;
-    // }
-    // Update is called once per frame
     void Update()
     {
-        MatchData data;
-        while (queuedLogs.TryDequeue(out data))
+        if (!monitorActive)
         {
-            try
+            monitorActive = tryGetMatchData();
+        }
+        CheckQueue();
+    }
+
+    void CheckQueue()
+    {
+        string queueData;
+
+        while (MatchData.Instance.queuedLogs.TryDequeue(out queueData))
+        {
+            tryGetMatchData();
+        }
+    }
+
+    bool tryGetMatchData()
+    {
+        try
+        {
+            roundId = MatchData.Instance.roundId;
+            Player2Name.SetText(MatchData.Instance.opponentName);
+            questionText1.SetText(MatchData.Instance.questionOne);
+            questionText2.SetText(MatchData.Instance.questionTwo);
+            alternative1.SetText(MatchData.Instance.alternative1);
+            alternative2.SetText(MatchData.Instance.alternative2);
+            alternative3.SetText(MatchData.Instance.alternative3);
+
+            if (MatchData.Instance.roundState == "right")
             {
-                Player2Name.SetText(data.opponentName);
-                questionText1.SetText(data.questionOne);
-                questionText2.SetText(data.questionTwo);
-                alternative1.SetText(data.alternative1);
-                alternative2.SetText(data.alternative2);
-                alternative3.SetText(data.alternative3);
+                StartCoroutine(ShowRigthFB(seconds));
             }
-            catch (System.Exception e)
+            else if (MatchData.Instance.roundState == "wrong")
             {
-                Debug.Log(e.Message);
-                throw;
+                StartCoroutine(ShowWrongFB(seconds));
+            }
+            else if (MatchData.Instance.roundState == "late")
+            {
+                StartCoroutine(ShowLateFB(seconds));
+            }
+            MatchData.Instance.roundState = null;
+
+            if (MatchData.Instance.gameEnded == "True")
+            {
+                if (MatchData.Instance.winner == "True")
+                {
+                    StartCoroutine(WinnerFB(finalMatchSeconds));
+                }
+                else
+                {
+                    StartCoroutine(DefeatFB(finalMatchSeconds));
+                }
+
+                MatchData.Instance.gameEnded = null;
+            }
+            if (MatchData.Instance.points != null)
+            {
+                Vector3 pos = new Vector3(float.Parse(MatchData.Instance.points) * 10, 0,0);
+                TugOfWar.transform.position += pos;
+            }
+
+            if (string.IsNullOrEmpty(roundId))
+            {
+                return true;
             }
         }
+        catch (System.Exception e)
+        {
+            Debug.Log(e.Message);
+            throw;
+        }
+        return false;
     }
 
     private void OnDestroy()
     {
-        WsSingleton.Instance.OnMessageReceived -= HandleWebSocketMessage;
+        Destroy(MatchData.Instance);
     }
 
-    void HandleAlternativeClick(string value){
+    void HandleAlternativeClick(string value)
+    {
         string message = @$"{{""Type"":""guessed"",""Message"":{{""RoundId"":""{roundId}"",""Guess"":{value}}}}}";
         WsSingleton.Instance.Send(message);
     }

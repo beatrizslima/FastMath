@@ -12,10 +12,10 @@ EditorBuildSettings:
     path: Assets/Scenes/Home.unity
     guid: 8f40b2540c8bdfb448ac72570877e072
   - enabled: 1
-    path: Assets/Scenes/Game.unity
-    guid: 10bd15725bcbe74439e9910131f008fa
-  - enabled: 1
     path: Assets/Scenes/Splash.unity
     guid: 324d3d055da2331438e44b0abba1afaa
+  - enabled: 1
+    path: Assets/Scenes/Game.unity
+    guid: 10bd15725bcbe74439e9910131f008fa
   m_configObjects:
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 64067c656c5304441ab3917b0e072d72, type: 2}

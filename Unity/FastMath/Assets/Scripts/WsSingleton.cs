@@ -1,12 +1,13 @@
 using UnityEngine;
 using WebSocketSharp;
 using System;
+using System.Collections;
 
 public class WsSingleton : MonoBehaviour
 {
     private static WsSingleton instance;
     private WebSocket webSocket;
-    
+
     public event Action<string> OnMessageReceived;
     public event Action OnConnectionOpen;
     public event Action OnConnectionClosed;
@@ -20,6 +21,8 @@ public class WsSingleton : MonoBehaviour
                 instance = FindObjectOfType<WsSingleton>();
                 if (instance == null)
                 {
+                    Debug.Log(MatchData.Instance.roundId);
+
                     GameObject obj = new GameObject("WebSocketManager");
                     instance = obj.AddComponent<WsSingleton>();
                 }
@@ -49,7 +52,9 @@ public class WsSingleton : MonoBehaviour
             return;
         }
 
-        webSocket = new WebSocket("ws://192.168.18.77:4000/connect?id=" + playerName);
+        webSocket = new WebSocket("wss://fast-math-ws-3lsl5v5pjq-rj.a.run.app:443/connect?id=" + playerName);
+        webSocket.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12;
+        webSocket.EnableRedirection = true;
 
         webSocket.OnOpen += (sender, e) =>
         {
@@ -73,11 +78,17 @@ public class WsSingleton : MonoBehaviour
         webSocket.OnClose += (sender, e) =>
         {
             Debug.Log("WebSocket connection closed.");
-            OnConnectionClosed?.Invoke();
-            webSocket = null;
+            StartCoroutine("closeConnection");
         };
 
         webSocket.Connect();
+    }
+
+    IEnumerator closeConnection()
+    {
+        yield return new WaitForSeconds(1);
+        OnConnectionClosed?.Invoke();
+        webSocket = null;
     }
 
     public void Send(string message)
