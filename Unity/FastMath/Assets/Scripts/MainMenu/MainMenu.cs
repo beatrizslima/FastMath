@@ -14,6 +14,9 @@ public class MainMenu : Singleton<MainMenu>
     [SerializeField] private Button Info;
     [SerializeField] private GameObject InfoBoard;
     [SerializeField] private Button CloseInfoBoard;
+    [SerializeField] private Button Config;
+    [SerializeField] private Button CloseConfigScreen;
+    [SerializeField] private GameObject ConfigScreen;
     void Start()
     {
         Debug.Log(PlayerPrefs.GetString("PlayerName"));
@@ -25,6 +28,8 @@ public class MainMenu : Singleton<MainMenu>
         Play.onClick.AddListener(SaveInfos);
         Info.onClick.AddListener(OpenInfoBoard);
         CloseInfoBoard.onClick.AddListener(CloseBoard);
+        Config.onClick.AddListener(OpenConfig);
+        CloseConfigScreen.onClick.AddListener(CloseConfig);
     }
 
     void ShowPlayerName(string name)
@@ -54,6 +59,15 @@ public class MainMenu : Singleton<MainMenu>
     void CloseBoard()
     {
         InfoBoard.SetActive(false);
+    }
+
+    void OpenConfig()
+    {
+        ConfigScreen.SetActive(true);
+    }
+    void CloseConfig()
+    {
+        ConfigScreen.SetActive(false);
     }
 
     void Update()
