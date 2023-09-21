@@ -46,21 +46,24 @@ type SocketMessage struct {
 }
 
 type RoundData struct {
-	RoundId      string
-	Value1       int
-	Value2       int
-	Alternatives [3]int
+	RoundId       string
+	Value1        int
+	Value2        int
+	Alternatives  [3]int
+	Player1Missed bool
+	Player2Missed bool
 }
 
 func NewRoundData() *RoundData {
 
-	position := rand.Intn(2)
+	position := rand.Intn(3)
 	round := RoundData{
 		RoundId:      uuid.New().String(),
-		Value1:       rand.Intn(10),
-		Value2:       rand.Intn(10),
-		Alternatives: [3]int{rand.Intn(100), rand.Intn(100), rand.Intn(100)},
+		Value1:       rand.Intn(11),
+		Value2:       rand.Intn(11),
+		Alternatives: [3]int{rand.Intn(101), rand.Intn(101), rand.Intn(101)},
 	}
+
 	round.Alternatives[position] = round.Value1 * round.Value2
 
 	return &round

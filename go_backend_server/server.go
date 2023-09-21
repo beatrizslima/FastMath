@@ -1,5 +1,5 @@
 // gcp service fast-math-ws artifactory register cloud-run-source-deploy
-// deploy with gcloud run deploy fast-math-ws artifactory --image cloud-run-source-deploy
+// deploy with gcloud run deploy fast-math-ws --image cloud-run-source-deploy
 package main
 
 import (
@@ -20,6 +20,7 @@ func main() {
 	http.HandleFunc("/connect", newConnectionParse)
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "FastMath engine is running on this port")
+
 	})
 	http.Handle("/view/", http.StripPrefix("/view/", http.FileServer(http.Dir("public_html"))))
 

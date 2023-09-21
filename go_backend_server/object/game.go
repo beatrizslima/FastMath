@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fast_math_server/model"
 	"log"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -53,6 +54,8 @@ func NewGame(p1 *Player, p2 *Player) *Game {
 
 	p2.SendMessage(initMsgP2.ToSocketBytes())
 
+	time.Sleep(time.Second * 3)
+
 	p1.SendMessage(startState.ToSocketBytes())
 
 	p2.SendMessage(startState.ToSocketBytes())
@@ -68,7 +71,7 @@ BREAK:
 		select {
 		case msgBytes := <-g.Player1.msgFromClient:
 			msg := model.ParseSocketMessage(msgBytes)
-			log.Println(g.Player1.name, " Sent the message: ", msg)
+			log.Println(g.Player1.name, "Sent the message: ", msg)
 			g.handleMessage(g.Player1, msg)
 
 		case msgBytes := <-g.Player2.msgFromClient:
@@ -121,22 +124,38 @@ func getGameLoserMessage(OpponentName string) []byte {
 func (g *Game) handleMessage(player *Player, msg *model.SocketMessage) {
 	switch msg.Type {
 	case model.Guessed:
+		if player.missed {
+			return
+		}
+
 		guess := model.ParseGuess(msg.Message)
+
 		switch g.Status {
 		case model.Starting, model.Waiting:
-			if g.checkIfGuessIsRight(guess) {
+			switch g.checkIfGuessIsRight(guess) {
+			case "right":
 				if player == g.Player1 {
 					handleRightAnswer(guess.RoundId, g.Player1, g.Player2)
 				} else {
 					handleRightAnswer(guess.RoundId, g.Player2, g.Player1)
 				}
+				time.Sleep(time.Second * 1)
 				g.UpdateGameState()
-			} else {
+			case "wrong":
 				if player == g.Player1 {
+					g.GameState.RoundData.Player1Missed = true
 					handleWrongAnswer(guess.RoundId, g.Player1)
 				} else {
+					g.GameState.RoundData.Player2Missed = true
 					handleWrongAnswer(guess.RoundId, g.Player2)
 				}
+
+				if g.GameState.RoundData.Player1Missed && g.GameState.RoundData.Player2Missed {
+					time.Sleep(time.Second * 1)
+					g.UpdateGameState()
+				}
+			case "late":
+				log.Printf(player.name, " answered late the round ", guess.RoundId)
 			}
 		}
 	case model.End:
@@ -144,14 +163,15 @@ func (g *Game) handleMessage(player *Player, msg *model.SocketMessage) {
 	}
 }
 
-func (g *Game) checkIfGuessIsRight(guess *model.Guess) bool {
+func (g *Game) checkIfGuessIsRight(guess *model.Guess) string {
 	if g.GameState.RoundData.RoundId == guess.RoundId {
 		rightAnswer := g.GameState.RoundData.Value1 * g.GameState.RoundData.Value2
 		if guess.Guess == rightAnswer {
-			return true
+			return "right"
 		}
+		return "wrong"
 	}
-	return false
+	return "late"
 }
 
 func handleRightAnswer(roundId string, right *Player, late *Player) {
@@ -188,6 +208,7 @@ func handleRightAnswer(roundId string, right *Player, late *Player) {
 }
 
 func handleWrongAnswer(roundId string, wrong *Player) {
+	wrong.missed = true
 	responseRight, err := json.Marshal(model.GuessResponse{
 		RoundId: roundId,
 		Answer:  "wrong",
@@ -212,6 +233,8 @@ func (g *Game) UpdateGameState() {
 
 		go g.Player1.Close()
 		go g.Player2.Close()
+		GS.RemoveGame(g.MatchID, g)
+		return
 	}
 	if g.Player2.points >= 5 {
 		msgWinner := getGameWinnerMessage(g.Player1.name)
@@ -222,7 +245,11 @@ func (g *Game) UpdateGameState() {
 
 		go g.Player1.Close()
 		go g.Player2.Close()
+		return
 	}
+
+	g.Player1.missed = false
+	g.Player2.missed = false
 
 	g.GameState.RoundData = model.NewRoundData()
 	g.Status = model.Waiting

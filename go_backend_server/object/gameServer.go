@@ -51,6 +51,8 @@ func (gs *gameServer) AddGame(gameName string, g *Game) {
 	gs.mu.Lock()
 	defer gs.mu.Unlock()
 
+	g.MatchID = gameName
+
 	gs.onlineGames[gameName] = g
 }
 

@@ -15,6 +15,7 @@ type Player struct {
 	exitChan      chan int
 	sendMutex     sync.Mutex
 	points        int
+	missed        bool
 }
 
 func NewPlayer(playerName string, conn *websocket.Conn) *Player {
