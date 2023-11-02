@@ -1749,10 +1749,10 @@ RectTransform:
   m_Father: {fileID: 441156177}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 3.9, y: 1264.9}
-  m_SizeDelta: {x: 7.8, y: 14.8}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 3.9000244, y: 264.90002}
+  m_SizeDelta: {x: -1116.2, y: -1985.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &783644475 stripped
 MonoBehaviour:
@@ -2581,6 +2581,7 @@ MonoBehaviour:
   mainMusic: {fileID: 1558949878}
   fail: {fileID: 271070895}
   success: {fileID: 2002372474}
+  late: {fileID: 0}
   winner: {fileID: 571965833}
   loser: {fileID: 40189850}
   gameFound: {fileID: 494882103}
