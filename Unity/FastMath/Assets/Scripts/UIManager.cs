@@ -24,6 +24,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button Home;
     [SerializeField] private Button Yes;
     [SerializeField] private Button No;
+    [SerializeField] private Button Config;
+    [SerializeField] private Button CloseConfigScreen;
+    [SerializeField] private GameObject ConfigScreen;
     [SerializeField] private GameObject PopUpGoHome;
     [SerializeField] private GameObject RightAnswerFb;
     [SerializeField] private GameObject WrongAnswerFb;
@@ -44,30 +47,47 @@ public class UIManager : MonoBehaviour
         //SetMatch();
 
         CheckQueue();
-
+        SoundManager.Instance.MainMusic();
         button1.onClick.AddListener(() => HandleAlternativeClick(button1.GetComponentInChildren<TextMeshProUGUI>().text));
         button2.onClick.AddListener(() => HandleAlternativeClick(button2.GetComponentInChildren<TextMeshProUGUI>().text));
         button3.onClick.AddListener(() => HandleAlternativeClick(button3.GetComponentInChildren<TextMeshProUGUI>().text));
         Home.onClick.AddListener(PopUpGoToHome);
         Yes.onClick.AddListener(GoHome);
         No.onClick.AddListener(ClosePopUp);
+        Config.onClick.AddListener(OpenConfig);
+        CloseConfigScreen.onClick.AddListener(CloseConfig);
     }
 
     void PopUpGoToHome(){
+        SoundManager.Instance.Click();
         PopUpGoHome.SetActive(true);
     }
 
     void GoHome(){
+        SoundManager.Instance.Click();
         TransitionManager.Instance().Transition("Home", transition, 0);
         WsSingleton.Instance.Close();
     }
 
     void ClosePopUp(){
+        SoundManager.Instance.Click();
         PopUpGoHome.SetActive(false);
+    }
+
+    void OpenConfig()
+    {
+        SoundManager.Instance.Click();
+        ConfigScreen.SetActive(true);
+    }
+    void CloseConfig()
+    {
+        SoundManager.Instance.Click();
+        ConfigScreen.SetActive(false);
     }
 
     IEnumerator ShowRigthFB(float seconds)
     {
+        SoundManager.Instance.Success();
         RightAnswerFb.SetActive(true);
 
         yield return new WaitForSeconds(seconds);
@@ -76,6 +96,7 @@ public class UIManager : MonoBehaviour
     }
     IEnumerator ShowWrongFB(float seconds)
     {
+        SoundManager.Instance.Fail();
         WrongAnswerFb.SetActive(true);
 
         yield return new WaitForSeconds(seconds);
@@ -84,6 +105,7 @@ public class UIManager : MonoBehaviour
     }
     IEnumerator ShowLateFB(float seconds)
     {
+        SoundManager.Instance.Late();
         LateAnswerFb.SetActive(true);
 
         yield return new WaitForSeconds(seconds);
@@ -93,6 +115,7 @@ public class UIManager : MonoBehaviour
 
     IEnumerator WinnerFB(float seconds)
     {
+        SoundManager.Instance.Winner();
         WinnerFb.SetActive(true);
 
         yield return new WaitForSeconds(seconds);
@@ -104,6 +127,7 @@ public class UIManager : MonoBehaviour
     }
     IEnumerator DefeatFB(float seconds)
     {
+        SoundManager.Instance.Loser();
         DefeatFb.SetActive(true);
 
         yield return new WaitForSeconds(seconds);

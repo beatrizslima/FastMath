@@ -19,6 +19,7 @@ public class MainMenu : Singleton<MainMenu>
     [SerializeField] private GameObject ConfigScreen;
     void Start()
     {
+        SoundManager.Instance.MainMusic();
         Debug.Log(PlayerPrefs.GetString("PlayerName"));
         if (PlayerPrefs.HasKey("PlayerName"))
         {
@@ -39,6 +40,7 @@ public class MainMenu : Singleton<MainMenu>
 
     void SaveInfos()
     {
+        SoundManager.Instance.Click();
         WsSingleton.Instance.Connect(InputFieldName.text);
         SavePlayerNameAndGoToPlay(InputFieldName.text);
     }
@@ -54,19 +56,23 @@ public class MainMenu : Singleton<MainMenu>
 
     void OpenInfoBoard()
     {
+        SoundManager.Instance.Click();
         InfoBoard.SetActive(true);
     }
     void CloseBoard()
     {
+        SoundManager.Instance.Click();
         InfoBoard.SetActive(false);
     }
 
     void OpenConfig()
     {
+        SoundManager.Instance.Click();
         ConfigScreen.SetActive(true);
     }
     void CloseConfig()
     {
+        SoundManager.Instance.Click();
         ConfigScreen.SetActive(false);
     }
 

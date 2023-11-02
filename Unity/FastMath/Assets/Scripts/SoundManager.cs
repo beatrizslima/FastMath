@@ -3,63 +3,58 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SoundManager : MonoBehaviour
+public class SoundManager : Singleton<SoundManager>
 {
-    [SerializeField] private Image SoundOn;
-    [SerializeField] private Image SoundOff;
-
-    private bool muted;
-   
+    public AudioSource mainMusic, fail, success, late, winner, loser, gameFound, clockTicking, click;
+    // Start is called before the first frame update
     void Start()
     {
-        if (!PlayerPrefs.HasKey("muted"))
-        {
-            PlayerPrefs.SetInt("muted", 0);
-            Load();
-        }else
-        {
-            Load();
-        }
-        UpdateIcon();
-        AudioListener.pause = muted;
+        //DontDestroyOnLoad(this);
     }
 
-    public void OnButtonPressed(){
-        if (muted == false)
-        {
-            muted = true;
-            AudioListener.pause = true;
-        }else
-        {
-            muted = false;
-            AudioListener.pause = false;
-        }
-        Save();
-        UpdateIcon();
-    }
-
-    void UpdateIcon(){
-        if (muted == false)
-        {
-            SoundOn.enabled = true;
-            SoundOff.enabled = false;
-        }else
-        {
-            SoundOn.enabled = false;
-            SoundOff.enabled = true;
-        }
-    }
-
-    void Load(){
-        muted = PlayerPrefs.GetInt("muted") == 1;
-    }
-
-    void Save(){
-        PlayerPrefs.SetInt("muted", muted ? 1 : 0);
-    }
-    // Update is called once per frame
-    void Update()
+    public void MainMusic()
     {
-        
+        mainMusic.Play();
     }
+
+    public void Fail()
+    {
+        fail.Play();
+    }
+
+    public void Success()
+    {
+        success.Play();
+    }
+
+    public void Late()
+    {
+        late.Play();
+    }
+
+    public void Winner()
+    {
+        winner.Play();
+    }
+    public void Loser()
+    {
+        loser.Play();
+    }
+    public void GameFound()
+    {
+        gameFound.Play();
+    }
+    public void ClockTicking()
+    {
+        clockTicking.Play();
+    }
+    public void PauseClockTicking()
+    {
+        clockTicking.Pause();
+    }
+    public void Click()
+    {
+        click.Play();
+    }
+
 }

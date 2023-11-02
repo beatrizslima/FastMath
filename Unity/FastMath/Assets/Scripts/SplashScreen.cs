@@ -19,31 +19,51 @@ public class SplashScreen : MonoBehaviour
     [SerializeField] private Button No;
     [SerializeField] private GameObject PopUpGoHome;
     [SerializeField] private Image FillLoading;
+    [SerializeField] private Button Config;
+    [SerializeField] private Button CloseConfigScreen;
+    [SerializeField] private GameObject ConfigScreen;
     // Start is called before the first frame update
     void Start()
     {
+        SoundManager.Instance.ClockTicking();
         isTransitioning = false;
         Home.onClick.AddListener(PopUpGoToHome);
         Yes.onClick.AddListener(GoHome);
         No.onClick.AddListener(ClosePopUp);
+        Config.onClick.AddListener(OpenConfig);
+        CloseConfigScreen.onClick.AddListener(CloseConfig);
     }
 
      void PopUpGoToHome(){
+        SoundManager.Instance.Click();
         PopUpGoHome.SetActive(true);
     }
 
     void GoHome(){
+        SoundManager.Instance.Click();
         TransitionManager.Instance().Transition("Home", transition, 0);
         WsSingleton.Instance.Close();
     }
 
     void ClosePopUp(){
+        SoundManager.Instance.Click();
         PopUpGoHome.SetActive(false);
     }
 
     public void LoadGame()
     {
+        SoundManager.Instance.GameFound();
         TransitionManager.Instance().Transition("Game", transition, 0);
+    }
+    void OpenConfig()
+    {
+        SoundManager.Instance.Click();
+        ConfigScreen.SetActive(true);
+    }
+    void CloseConfig()
+    {
+        SoundManager.Instance.Click();
+        ConfigScreen.SetActive(false);
     }
 
     // Update is called once per frame
@@ -59,6 +79,8 @@ public class SplashScreen : MonoBehaviour
         {
             if (!isTransitioning)
             {
+                SoundManager.Instance.PauseClockTicking();
+                SoundManager.Instance.GameFound();
                 LoadGame();
                 isTransitioning = true;
             }
