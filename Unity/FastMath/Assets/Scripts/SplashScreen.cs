@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using System;
 using System.Text.RegularExpressions;
 using EasyTransition;
+using UnityEngine.Networking;
 
 
 public class SplashScreen : MonoBehaviour
@@ -32,6 +33,26 @@ public class SplashScreen : MonoBehaviour
         No.onClick.AddListener(ClosePopUp);
         Config.onClick.AddListener(OpenConfig);
         CloseConfigScreen.onClick.AddListener(CloseConfig);
+        StartCoroutine("RequestHealth");
+    }
+
+    IEnumerator RequestHealth(){
+        using (UnityWebRequest webRequest = UnityWebRequest.Get("https://fast-math-ws-3lsl5v5pjq-rj.a.run.app/health")){
+            yield return webRequest.SendWebRequest();
+
+            switch (webRequest.result)
+            {
+                case UnityWebRequest.Result.Success:    
+                    Debug.Log(webRequest.downloadHandler.text);
+                    break;
+
+                default:
+                    Debug.Log("erro");
+                    break;
+
+            }
+        }
+        
     }
 
      void PopUpGoToHome(){
